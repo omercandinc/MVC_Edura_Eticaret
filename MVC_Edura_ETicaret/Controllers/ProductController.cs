@@ -14,13 +14,28 @@ namespace MVC_Edura_ETicaret.Controllers
     {
         private MVC_Edura_ETicaretContext db = new MVC_Edura_ETicaretContext();
 
-		public ActionResult List()
+		public PartialViewResult FeaturedProductList()
 		{
 			var products = db
 				.Products
-				.Where(i => i.IsApproved == true)
+				.Where(i => i.IsApproved == true && i.IsFeatured==true)
 				.ToList();
-			return View(products);
+			return PartialView(products);
+		}
+
+		public ActionResult List(string q)
+		{
+			var products = db
+				.Products
+				.Where(i => i.IsApproved == true);
+			if (!string.IsNullOrEmpty(q))
+			{
+				q = q.ToLower();
+				products = products.Where(i => i.Name.ToLower().Contains(q) || i.Description.ToLower().Contains(q));
+			}
+
+			
+			return View(products.ToList());
 		}
 
 		// GET: Product
